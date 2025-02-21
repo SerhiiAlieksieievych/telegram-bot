@@ -27,7 +27,7 @@ class CurrencyData:
 
 
 class Currency:
-    def __init__(self, demonym, currency_codes_data):
+    def __init__(self, demonym:str, currency_codes_data:obj):
         self.demonym = demonym
         self.ISOnum = currency_codes_data[demonym]
         self.name = currency_codes_data[demonym]["name"]
@@ -169,6 +169,7 @@ class BotHandler:
         self.target_currency = Currency(name_of_currency, self.currency_codes_data)
 
     def check_pattern(self):
+        """The method checks whether the term matches the specified pattern."""
         if not re.fullmatch(r'\d+\s([A-Za-z]{3})', self.users_input):
             bot.send_message(self.message.chat.id, "НЕВІРНИЙ ФОРМАТ ВВОДУ! СПРОБУЙТЕ ЩЕ РАЗ!\n" + self.offer_phrase)
             bot.register_next_step_handler(self.message, self.string_handler)
@@ -177,6 +178,7 @@ class BotHandler:
             return True
 
     def check_amount(self, tested_amount: int):
+        """The method checks if the sum is greater than zero."""
         if tested_amount <= 0:
             bot.send_message(self.message.chat.id, "Неправильно вказана сума!\n" + self.offer_phrase)
             bot.register_next_step_handler(self.message, self.string_handler)
@@ -185,6 +187,7 @@ class BotHandler:
             return True
 
     def check_for_pork(self, demonym: str):
+        """The method checks that the user is not trying to exchange pig money."""
         if demonym == "RUB":
             bot.send_message(self.message.chat.id,
                              f"Монобанк не опрацьовує це сміття!\n" + "Спробуйте піти в слід за кораблем!")
@@ -194,6 +197,7 @@ class BotHandler:
             return True
 
     def check_demonym(self, demonym):
+        """The method checks whether the demonym of the currency is correctly specified and whether the monobank can process this currency."""
         try:
             if self.currency_codes_data[demonym]['ISOnum'] not in self.monobank_currency_codes:
                 bot.send_message(self.message.chat.id,
@@ -208,7 +212,7 @@ class BotHandler:
             return False
 
     def check_validity(self):
-        """If input is valid sets amount and initial currancy demonym, and returns True, else returns False"""
+        """If input is valid the method sets amount and initial currancy demonym, and returns True, else returns False"""
         if self.check_pattern():
             _list_for_handling = self.users_input.split(' ')
             demonym = _list_for_handling[1].upper()
@@ -220,6 +224,7 @@ class BotHandler:
         return False
 
     def keyboard_creator(self):
+        """The method creates inline keyboard based on the initial currency set."""
         markup = types.InlineKeyboardMarkup(row_width=2)
         btn1 = types.InlineKeyboardButton("USD", callback_data="USD")
         btn2 = types.InlineKeyboardButton("EUR", callback_data="EUR")
@@ -234,6 +239,7 @@ class BotHandler:
         return markup
 
     def string_handler(self, message):
+        """The method processes all input strings"""
         self.message = message
         self.user_id = message.from_user.id
         self.users_input = message.text.strip()
