@@ -27,7 +27,7 @@ class CurrencyData:
 
 
 class Currency:
-    def __init__(self, demonym:str, currency_codes_data:obj):
+    def __init__(self, demonym:str, currency_codes_data):
         self.demonym = demonym
         self.ISOnum = currency_codes_data[demonym]
         self.name = currency_codes_data[demonym]["name"]
@@ -52,6 +52,8 @@ class RequestToMonobank:
         self.currencyB = currencyB
 
     def _request_to_monobank(self):
+        """The method makes a request to the monobank and saves a list with all the information provided by the monobank
+        and a list of currency codes that can be converted."""
         self.succesed = False
         resp = requests.get("https://api.monobank.ua/bank/currency")
         if resp.status_code == 200:
@@ -66,11 +68,17 @@ class RequestToMonobank:
             self._request_to_monobank()
 
     def get_monobank_currency_codes(self):
+        """The method calls the monobank request method
+        and returns a дшіе with currency codes that can be processed."""
         self._request_to_monobank()
         if self.succesed:
             return self.monobank_currency_codes
 
     def get_value_of_currencies(self):
+        """The method makes a request to the monobank,
+        calculates the conversion coefficients depending on the selected currencies,
+        records them in the appropriate dictionaries
+        and returns a tuple with two modified currency dictionaries"""
         self._request_to_monobank()
         if self.succesed:
             if self.currencyA.ISOnum['ISOnum'] == 840:
@@ -105,6 +113,7 @@ class CurrencyConverter:
         self.result = None
 
     def get_result_of_conversion(self):
+        """The method calculates the conversion result depending on the selected currencies and returns it."""
         if self.currencyA.ISOnum['ISOnum'] == 978 and self.currencyB.ISOnum['ISOnum'] == 840:
             self.result = self.amount * self.currencyA.rateToUsd
         elif self.currencyA.ISOnum['ISOnum'] == 840 and self.currencyB.ISOnum['ISOnum'] == 978:
