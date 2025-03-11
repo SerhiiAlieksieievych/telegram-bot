@@ -5,8 +5,11 @@ import requests
 import codecs
 import time
 from telebot import types
+from dotenv import load_dotenv
+import os
+load_dotenv()
+token = os.getenv("TOKEN")
 
-token = None
 bot = telebot.TeleBot(token)
 
 class CurrencyData:
